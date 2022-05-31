@@ -1,9 +1,9 @@
 //Dependencies
-require("dotenv").config(); //Load Variables from .env
-const mongoose = require("mongoose"); //Load Mongoose
+require("dotenv").config({ debug: true });
+const mongoose = require('mongoose');
 
 //Shorthand for Connection arguments
-const DATABASE_URL = process.env.DATABASE_URL; //DATABASE_URL from .env
+const DATABASE_URL = process.env.MONGODB_URL;
 const CONFIG = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -16,7 +16,7 @@ mongoose.connect(DATABASE_URL, CONFIG);
 mongoose.connection
   .on("open", () => console.log("Connection to MongoDB open"))
   .on("close", () => console.log("Connection to MongoDB closed"))
-  .on("error", () => console.log(error));
+  .on("error", (err) => console.log(err));
 
 //Export Connection
 module.exports = mongoose;
