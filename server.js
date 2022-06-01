@@ -1,36 +1,47 @@
-//Dependencies
-const express = require('express');
-const mongoose = require('./models/connection');
-const methodOverride = require('method-override');
+// ---------- Dependencies ----------
 
-//Shorthand Variables
+require("dotenv").config();
+const express = require('express');
+const morgan = require("morgan");
+const EventRouter = require('./controllers/events');
+
+// const session = require('express-session');
+// const MongoStore = require('connect-mongo');
+
+
+// ---------- Short-hand Variables ----------
+
 const app = express();
 const port = process.env.PORT;
-const db = mongoose.connection;
-const DATABASE_URL = process.env.DATABASE_URL;
 
+// ---------- Middleware ----------
 
-//DataBase Connection
-mongoose.connect(DATABASE_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+console.log(process.env.PORT);
 
-// Database Connection Error/Success Callbacks
-db.on('error', (err) => console.log(' is mongod not running?'));
-db.on('connected', () => console.log('mongo connected'));
-db.on('disconnected', () => console.log('mongo disconnected'));
+app.use(morgan("tiny"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+// app.use(session({
+//   secret: process.env.SECRET,
+//   store: MongoStore.create({
+//     mongoUrl: process.env.DATABASE_URL,
+//     saveUninitialized: true,
+//     resave: false
+//   })
+// }))
 
-//MiddleWare
-app.use(methodOverride('_method'));
-app.use(express.urlencoded({ extended: false }));
+// ---------- Routers ----------
 
-//Routes
+app.use("/events", EventRouter)
+
 app.get('/', (req,res) => {
   res.send("Hello world!");
 })
 
-//Listen on port 3002
+// ---------- Server Listener ----------
+
 app.listen(port, (req,res) => {
   console.log(`Express is listening on port ${port}!`);
 });
+
+/////////////////////////////////////////

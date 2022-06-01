@@ -1,5 +1,5 @@
 //Dependencies
-require("dotenv").config({ debug: true });
+require("dotenv").config({ path: "../.env" });
 const mongoose = require('mongoose');
 
 //Shorthand for Connection arguments
@@ -13,10 +13,11 @@ const CONFIG = {
 mongoose.connect(DATABASE_URL, CONFIG);
 
 //Connection Events & Callbacks
-mongoose.connection
-  .on("open", () => console.log("Connection to MongoDB open"))
-  .on("close", () => console.log("Connection to MongoDB closed"))
-  .on("error", (err) => console.log(err));
+const db = mongoose.connection;
+
+db.once("open", () => console.log("Connected to MongoDB"))
+db.on("close", () => console.log("Connection to MongoDB closed"))
+db.on("error", (error) => console.log(error));
 
 //Export Connection
 module.exports = mongoose;
