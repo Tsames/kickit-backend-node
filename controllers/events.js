@@ -14,73 +14,68 @@ const router = express.Router();
 // ---------- Event Router ----------
 
 //Index Route
-router.get("/events", (req, res) => {
-  Event.find({}, (err, events) => {
-    res.send(events);
-  });
+router.get("/", async (req, res) => {
+  try {
+    const data = await Event.find({})
+    res.status(200).json(data);
+  } catch(error) {
+    res.status(500).json({ message: error.message })
+  }
 });
 
 //Show Route
-router.get("/events/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const id = req.params.id;
 
-  Event.findOne({ _id: id }, (err, event) => {
-    if (req.session.loggedIn) {
-      username = req.session.username;
-      User.findOne({ username }, (err, user) => {
-        res.render("./events/show.ejs", { user, event, session: req.session });
-      });
-    } else {
-      res.render("./events/show.ejs", { event, session: req.session })
-    }
-  });
+  try {
+    const data = await Event.findOne({ _id: id });
+    res.status(200).json(data);
+  } catch(error) {
+    res.status(500).json({ message: error.message })
+  }
 });
 
 //Delete Route
-router.delete("/events/:id", (req, res) => {
-  const id = req.params.id;
-  console.log(id);
-  Event.findOneAndRemove({ _id: id }, (err, event) => {
-    console.log("Deleted Event:");
-    console.log(event);
-    res.redirect("/events");
-  });
+router.delete("/:id", (req, res) => {
+  // const id = req.params.id;
+  // console.log(id);
+  // Event.findOneAndRemove({ _id: id }, (err, event) => {
+  //   console.log("Deleted Event:");
+  //   console.log(event);
+  //   res.redirect("/events");
+  // });
 });
 
 //Update Route
-router.put("/events/:id", (req, res) => {
-  const id = req.params.id;
+router.put("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const newData = req.body;
+    const options = { new: true };
 
-  Event.findById(id, (err, event) => {
+    const result = await Event.findByIdAndUpdate(id, newData, options);
 
-    //Make new Date Object
-    req.body.date = new Date(req.body.date + "T" + req.body.time);
-    delete req.body.time;
-
-    //Set other properties of the Body
-    req.body.zip = Number(req.body.zip);
-
-    //Set organizer and attendees
-    req.body.attendees = event.attendees;
-    req.body.organizer = event.organizer;
-
-    console.log(req.body);
-
-    Event.findByIdAndUpdate(id, req.body, { new: true }, (err, event) => {
-      console.log(event);
-      res.redirect("/events");
-    });
-  });
+    res.send(result);
+  } catch(error) {
+    res.status(400).json({ message: error.message })
+  }
 });
 
 //Create Route
-router.post("/events", (req, res) => {
+router.post('/', async (req, res) => {
 
-  Event.create(req.body, (err, event) => {
-    res.redirect("/");
-  });
+  const data = new Event({
+    title: req.body.title,
+  })
 
-});
+  try {
+    const dataToSave = await data.save();
+    res.status(200).json(dataToSave)
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+})
 
 // ---------- Export Router ----------
 
