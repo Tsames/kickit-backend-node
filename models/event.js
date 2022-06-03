@@ -10,7 +10,7 @@ const eventSchema = new Schema({
   title: String,
   location: String,
   description: String,
-  cost: Number,
+  cost: String,
   early: Number,
   late: Number,
   days: [Number]
