@@ -67,6 +67,12 @@ router.post('/', async (req, res) => {
 
   const data = new Event({
     title: req.body.title,
+    location: req.body.location,
+    description: req.body.description,
+    cost: req.body.cost,
+    early: req.body.early,
+    late: req.body.late,
+    days: req.body.days
   })
 
   try {

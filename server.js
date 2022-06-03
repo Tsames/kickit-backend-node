@@ -3,6 +3,7 @@
 require("dotenv").config();
 const express = require('express');
 const morgan = require("morgan");
+const cors = require("cors");
 const bodyParser = require('body-parser');
 const EventRouter = require('./controllers/events');
 
@@ -17,6 +18,9 @@ app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(cors({
+  origin: ['http://localhost:3000']
+}));
 
 // ---------- Routers ----------
 
