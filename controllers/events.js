@@ -5,10 +5,10 @@ const Event = require("../models/event");
 
 // ---------- Create Event Router ----------
 
+const app = express();
 const router = express.Router();
 
 // ---------- Middleware ----------
-
 
 
 // ---------- Event Router ----------
@@ -37,13 +37,13 @@ router.get("/:id", async (req, res) => {
 
 //Delete Route
 router.delete("/:id", (req, res) => {
-  // const id = req.params.id;
-  // console.log(id);
-  // Event.findOneAndRemove({ _id: id }, (err, event) => {
-  //   console.log("Deleted Event:");
-  //   console.log(event);
-  //   res.redirect("/events");
-  // });
+  try {
+    const id = req.params.id;
+    Event.findByIdAndDelete(id);
+    res.send(`Document with title ${req.body.title} has been deleted...`);
+  } catch(error) {
+    res.status(400).json({ message: error.message })
+  }
 });
 
 //Update Route
@@ -54,9 +54,10 @@ router.put("/:id", async (req, res) => {
     const options = { new: true };
 
     const result = await Event.findByIdAndUpdate(id, newData, options);
-
     res.send(result);
+
   } catch(error) {
+
     res.status(400).json({ message: error.message })
   }
 });
