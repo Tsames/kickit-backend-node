@@ -29,9 +29,12 @@ mongoose.connection.on("open", () => {
   const dateTen = makeNewDate(10);
   const dateEleven = makeNewDate(11);
 
+  //Create Sample Attending Data
+  const attendingEventOne = [{name: "Tom", available: {column: 1, rows: [1,2]}}, {name: "Evelyn", available: {column: 1, rows: [2,3]}}, {name: "Martha", available: {column: 1, rows:[1,3]}}];
+
   //Create sample event data
   const sampleEvents = [
-    {title: "Delightful Picnic", location: "Test Park", description: "Come down to Test Park and enjoy a delightful picnic in the afternoon sun. The weather is just so delightful this time of year. Make sure you bring something to share with everyone!", cost: "Bring a tasty something to share!", early: 11, late: 14, days: [dateOne, dateTwo, dateFive, dateSix]},
+    {title: "Delightful Picnic", location: "Test Park", description: "Come down to Test Park and enjoy a delightful picnic in the afternoon sun. The weather is just so delightful this time of year. Make sure you bring something to share with everyone!", cost: "Bring a tasty something to share!", early: 11, late: 14, days: [dateOne, dateTwo, dateFive, dateSix], attending: attendingEventOne},
     { title: "Friday Night Jam at the Roller Rink", location: "Mojo's Party Rink", description: "Get ready to groove out on the roller rink! We're trying to get as many people as we can to attend! Come join us, its gonna be awesome!", cost: "12.50 for the whole evening!", early: 18, late: 24, days: [dateThree, dateFour, dateEight, dateEleven]},
     { title: "Frozen Pizza Party", location: "Andreas' house", description: "We're celebrating andreas' birthday with his request. A little strange but we promise once you try it you'll find you really like it!", cost: "bring a present for andreas", early: 14, late: 20, days: [dateSeven, dateNine, dateTen]}
   ];

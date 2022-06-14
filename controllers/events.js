@@ -72,7 +72,8 @@ router.post('/', async (req, res) => {
     cost: req.body.cost,
     early: req.body.early,
     late: req.body.late,
-    days: req.body.days
+    days: req.body.days,
+    attending: req.body.attending
   })
 
   try {

@@ -13,7 +13,8 @@ const eventSchema = new Schema({
   cost: String,
   early: Number,
   late: Number,
-  days: [Number]
+  days: [Number],
+  attending: [{name: String, available: [{column: Number, rows: [Number]}]}]
 });
 
 const Event = model("Event", eventSchema);
