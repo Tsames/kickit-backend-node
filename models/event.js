@@ -10,11 +10,10 @@ const eventSchema = new Schema({
   title: String,
   location: String,
   description: String,
-  cost: String,
   early: Number,
   late: Number,
   days: [Number],
-  attending: [{name: String, available: [{column: Number, rows: [Number]}]}]
+  attending: [{name: String, available: [[Number, Number, Number]]}]
 });
 
 const Event = model("Event", eventSchema);

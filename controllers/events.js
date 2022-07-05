@@ -35,6 +35,23 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//Search Database for
+router.get("/search/:input", async (req, res) => {
+  const searchInput = req.params.input;
+
+  try {
+    const data = await Event.find({
+      $or: [
+        { title: searchInput },
+        { title: /searchInput/ }
+      ],
+    });
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+});
+
 //Delete Route
 router.delete("/:id", (req, res) => {
   try {
@@ -49,7 +66,7 @@ router.delete("/:id", (req, res) => {
 //Update Route
 router.put("/:id", async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.id; 
     const newData = req.body;
     const options = { new: true };
 
