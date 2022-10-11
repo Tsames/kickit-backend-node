@@ -10,7 +10,7 @@ const EventRouter = require('./controllers/events');
 // ---------- Short-hand Variables ----------
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
 // ---------- Middleware ----------
 
