@@ -34,9 +34,7 @@ mongoose.connection.on("open", () => {
 
   //Create sample event data
   const sampleEvents = [
-    {title: "Delightful Picnic", location: "Greer Park", description: "Come down to Greer Park and enjoy a delightful picnic in the afternoon sun. The weather is just so delightful this time of year. Make sure you bring something to share with everyone!", early: 1, late: 24, days: [dateOne, dateTwo, dateThree, dateFive, dateSix, dateSeven, dateEight, dateTen, dateEleven], attending: attendingEventOne},
-    { title: "Friday Night Jam at the Roller Rink", location: "Mojo's Party Rink", description: "Get ready to groove out on the roller rink! We're trying to get as many people as we can to attend! Come join us, its gonna be awesome!", early: 18, late: 24, days: [dateThree, dateFour, dateEight, dateEleven]},
-    { title: "Frozen Pizza Party", location: "Andreas' house", description: "We're celebrating andreas' birthday with his request. A little strange but we promise once you try it you'll find you really like it!", early: 14, late: 20, days: [dateSeven, dateNine, dateTen]}
+    {title: "Delightful Picnic", location: "Greer Park", description: "Come down to Greer Park and enjoy a delightful picnic in the afternoon sun. The weather is just so delightful this time of year, it would be a real shame to miss out on such a lovely day. Make sure you bring something to share with everyone!", early: 1, late: 23, days: [dateOne, dateTwo, dateThree, dateFive, dateSix, dateSeven, dateEight, dateTen, dateEleven], attending: attendingEventOne},
   ];
 
   //First delete all events then create the new ones
