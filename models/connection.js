@@ -1,5 +1,5 @@
 //Dependencies
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config();
 const mongoose = require('mongoose');
 
 //Shorthand for Connection arguments
@@ -8,6 +8,8 @@ const CONFIG = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };
+
+console.log(DATABASE_URL);
 
 //Create Connection Object
 mongoose.connect(DATABASE_URL, CONFIG);
