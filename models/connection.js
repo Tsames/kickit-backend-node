@@ -9,8 +9,6 @@ const CONFIG = {
   useUnifiedTopology: true,
 };
 
-console.log(DATABASE_URL);
-
 //Create Connection Object
 mongoose.connect(DATABASE_URL, CONFIG);
 
