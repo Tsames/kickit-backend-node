@@ -3,7 +3,7 @@ require("dotenv").config();
 const mongoose = require('mongoose');
 
 //Shorthand for Connection arguments
-const DATABASE_URL = process.env.MONGODB_URL;
+const DATABASE_URL = process.env.MONGODB;
 const CONFIG = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
