@@ -5,8 +5,7 @@ const Event = require("../models/event");
 
 // ---------- Create Event Router ----------
 
-const app = express();
-const router = express.Router();
+const eventRouter = express.Router();
 
 // ---------- Middleware ----------
 
@@ -14,7 +13,7 @@ const router = express.Router();
 // ---------- Event Router ----------
 
 //Index Route
-router.get("/", async (req, res) => {
+eventRouter.get("/", async (req, res) => {
   try {
     const data = await Event.find({})
     res.status(200).json(data);
@@ -24,7 +23,7 @@ router.get("/", async (req, res) => {
 });
 
 //Show Route
-router.get("/:id", async (req, res) => {
+eventRouter.get("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -36,7 +35,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //Search Database for
-router.get("/search/:input", async (req, res) => {
+eventRouter.get("/search/:input", async (req, res) => {
   const searchInput = req.params.input;
 
   try {
@@ -53,7 +52,7 @@ router.get("/search/:input", async (req, res) => {
 });
 
 //Delete Route
-router.delete("/:id", (req, res) => {
+eventRouter.delete("/:id", (req, res) => {
   try {
     const id = req.params.id;
     Event.findByIdAndDelete(id);
@@ -64,7 +63,7 @@ router.delete("/:id", (req, res) => {
 });
 
 //Update Route
-router.put("/:id", async (req, res) => {
+eventRouter.put("/:id", async (req, res) => {
   try {
     const id = req.params.id; 
     const newData = req.body;
@@ -80,7 +79,7 @@ router.put("/:id", async (req, res) => {
 });
 
 //Create Route
-router.post('/', async (req, res) => {
+eventRouter.post('/', async (req, res) => {
 
   const data = new Event({
     title: req.body.title,
@@ -104,6 +103,6 @@ router.post('/', async (req, res) => {
 
 // ---------- Export Router ----------
 
-module.exports = router;
+module.exports = eventRouter;
 
 ///////////////////////////////////////
