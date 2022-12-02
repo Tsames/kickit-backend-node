@@ -13,7 +13,68 @@ const userRouter = express.Router();
 
 // ---------- User Router ----------
 
-//Index Route
+/* &%&%&%&%&%& Signup Route &%&%&%&%&%& */
+userRouter.post('/signup', async (req, res) => {
+
+  const { email, password, name } = req.body
+
+  try {
+
+    //Check if user already exists
+    const findExistingUser = await User.findOne({ email: email });
+
+    //If so res.send error
+    if (findExistingUser) {
+
+      res.status(400).json({ message: "That user already exists. Try logging in with the provided email address." })
+
+    //Else try and make new user
+    } else {
+
+      const hash = await brcypt.hash(password, 13)
+
+      const newUser = new User({
+        name: name,
+        email: email,
+        password: hash,
+      })
+
+      const savedUser = await newUser.save();
+      res.status(200).json({ message: "User created.", payload: savedUser })
+
+    }
+
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+
+})
+
+/* &%&%&%&%&%& Login Route &%&%&%&%&%& */
+
+userRouter.post("/login", async (req, res) => {
+  
+  const { email, password } = req.body
+  let data;
+
+  try {
+
+    data = await User.findOne({ email: email });
+    const isMatch = await brcypt.compare(password, data.password)
+
+    if (isMatch) {
+      res.status(200).json({ message: "Login Successful", payload: data });
+    } else {
+      res.status(401).json({ message: "Password incorrect"})
+    }
+
+  } catch (error) {
+    res.status(500).json({ message: "No user with that email exists" })
+  }
+
+});
+
+//Get All Route
 userRouter.get("/", async (req, res) => {
   try {
     const data = await User.find({})
@@ -23,51 +84,16 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
-//Login Route
-userRouter.post("/login", async (req, res) => {
-  
-  const { name, email, password } = req.body
-  const hash = await brcypt.hash(password, 13)
-
-  try {
-    const data = await User.findOne({ _id: id });
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-});
-
-//Delete Route
-userRouter.delete("/:id", (req, res) => {
-  try {
-    const id = req.params.id;
-    User.findByIdAndDelete(id);
-    res.send(`User with name ${req.body.name} has been deleted...`);
-  } catch (error) {
-    res.status(400).json({ message: error.message })
-  }
-});
-
-//Signup Route
-userRouter.post('/signup', async (req, res) => {
-
-  const { name, email, password } = req.body
-  const hash = await brcypt.hash(password, 13)
-
-  const data = new User({
-    name: name,
-    email: email,
-    password: hash,
-  })
-
-  try {
-    const dataToSave = await data.save();
-    res.status(200).json(dataToSave)
-  }
-  catch (error) {
-    res.status(400).json({ message: error.message })
-  }
-})
+//Delete A User Route
+// userRouter.delete("/:id", (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     User.findByIdAndDelete(id);
+//     res.send(`User with name ${req.body.name} has been deleted...`);
+//   } catch (error) {
+//     res.status(400).json({ message: error.message })
+//   }
+// });
 
 // ---------- Export Router ----------
 
