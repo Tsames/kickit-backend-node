@@ -5,6 +5,7 @@ const express = require('express');
 const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 const EventRouter = require('./controllers/events');
 const UserRouter = require('./controllers/users');
 

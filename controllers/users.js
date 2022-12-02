@@ -1,6 +1,7 @@
 // ---------- Dependencies ----------
 
-const express = require("express");
+const express = require('express');
+const brcypt = require('bcrypt');
 const User = require("../models/user");
 
 // ---------- Create User Router ----------
@@ -22,9 +23,11 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
-//Show Route
-userRouter.get("/:id", async (req, res) => {
-  const id = req.params.id;
+//Login Route
+userRouter.post("/login", async (req, res) => {
+  
+  const { name, email, password } = req.body
+  const hash = await brcypt.hash(password, 13)
 
   try {
     const data = await User.findOne({ _id: id });
@@ -45,29 +48,16 @@ userRouter.delete("/:id", (req, res) => {
   }
 });
 
-// //Update Route
-// userRouter.put("/:id", async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const newData = req.body;
-//     const options = { new: true };
+//Signup Route
+userRouter.post('/signup', async (req, res) => {
 
-//     const result = await User.findByIdAndUpdate(id, newData, options);
-//     res.send(result);
-
-//   } catch (error) {
-
-//     res.status(400).json({ message: error.message })
-//   }
-// });
-
-//Create Route
-userRouter.post('/', async (req, res) => {
+  const { name, email, password } = req.body
+  const hash = await brcypt.hash(password, 13)
 
   const data = new User({
-    email: req.body.email,
-    password: req.body.password,
-    name: req.body.name
+    name: name,
+    email: email,
+    password: hash,
   })
 
   try {
