@@ -1,5 +1,5 @@
 //Dependencies
-const mongoose = require("./connection");
+const mongoose = require("../connection");
 
 //Shorthand Variables
 const Schema = mongoose.Schema;
