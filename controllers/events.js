@@ -2,6 +2,7 @@
 
 const express = require("express");
 const Event = require("../models/event");
+const jwt = require('jsonwebtoken');
 
 // ---------- Create Event Router ----------
 
@@ -25,7 +26,7 @@ function authenticateToken(req, res, next) {
 
 // ---------- Event Router ----------
 
-//Index Route
+//Normal Index Route
 eventRouter.get("/", async (req, res) => {
   try {
     const data = await Event.find({})
@@ -33,6 +34,24 @@ eventRouter.get("/", async (req, res) => {
   } catch(error) {
     res.status(500).json({ message: error.message })
   }
+});
+
+//Get all events created by current user
+eventRouter.get("/", authenticateToken, async (req, res) => {
+
+  try {
+
+    const email = req.user.email;
+
+    const data = await Event.find({ organizerEmail: email })
+    res.send(data);
+
+  } catch(error) {
+
+    res.status(500).json({ message: error.message })
+
+  }
+
 });
 
 //Show Route
@@ -94,15 +113,18 @@ eventRouter.put("/:id", async (req, res) => {
 //Create Route
 eventRouter.post('/', async (req, res) => {
 
+  const { title, location, description, early, late, days, attending, organizerEmail, organizerName } = req.body;
+
   const data = new Event({
-    title: req.body.title,
-    location: req.body.location,
-    description: req.body.description,
-    cost: req.body.cost,
-    early: req.body.early,
-    late: req.body.late,
-    days: req.body.days,
-    attending: req.body.attending
+    title: title,
+    location: location,
+    description: description,
+    early: early,
+    late: late,
+    days: days,
+    attending: attending,
+    organizerEmail: organizerEmail,
+    organizerName: organizerName
   })
 
   try {

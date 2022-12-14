@@ -28,6 +28,10 @@ const eventSchema = new Schema({
     type: String,
     required: true,
   },
+  organizerID: {
+    type: String,
+    required: true,
+  }
 });
 
 const Event = model("Event", eventSchema);
