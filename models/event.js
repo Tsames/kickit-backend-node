@@ -1,5 +1,5 @@
 //Dependencies
-const mongoose = require("../connection");
+const mongoose = require("../connections/mongodb");
 
 //Shorthand Variables
 const Schema = mongoose.Schema;
@@ -19,7 +19,7 @@ const eventSchema = new Schema({
   early: Number,
   late: Number,
   days: [Number],
-  attending: [{name: String, available: [[Number, Number, Number]]}],
+  attending: [{ name: String, available: [[Number, Number, Number]] }],
   organizerEmail: {
     type: String,
     required: true,

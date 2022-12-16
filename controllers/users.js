@@ -109,15 +109,16 @@ userRouter.post("/forgot-password", async (req, res) => {
 
     //Create the payload
     const payload = {
-      email: existingUser.email,
-      id: existingUser.id
+      id: existingUser.id,
+      name: existingUser.name,
+      email: existingUser.email
     }
 
     //Create a new JWT token with the a secret unique to each user that expires in 30 minutes
     const token = jwt.sign(payload, secret, {expiresIn: '30m'});
 
     //Create a unique link from that temporary token
-    const link = `http://localhost:3000/reset-password/${existingUser.id}/${token}`
+    const link = `http://localhost:3000/users/reset-password/${existingUser.id}/${token}`
 
     res.send(link);
 
