@@ -17,23 +17,10 @@ const userRouter = express.Router();
 
 // ---------- Middleware ----------
 
-function authenticateToken(req, res, next) {
-
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-  
-}
 
 // ---------- User Router ----------
 
-/* &%&%&%&%&%& Signup Route &%&%&%&%&%& */
+/* &%&%&%&%&%& Create Token and Email (Signup 1) &%&%&%&%&%& */
 
 userRouter.post('/signup', async (req, res) => {
 
@@ -59,18 +46,18 @@ userRouter.post('/signup', async (req, res) => {
       };
 
       //Create a new secret that is unique to each individual user
-      const secret = process.env.ACCESS_TOKEN_SECRET;
+      const secret = process.env.ACCESS_TOKEN_SECRET + email;
 
       //Create a new JWT token with the a secret unique to each user that expires in 1 day
       const token = jwt.sign(newUser, secret, { expiresIn: '30m' });
 
       //Create a unique link from that temporary token
-      const link = `http://localhost:3000/users/confirm-account/${token}`
+      const link = `http://localhost:3000/users/confirm-account/${email}/${token}`
 
       //Send email to user via the transporter object
-      let info = await transporter.sendMail(confirmAccountEmail(newUser.email, link));
+      // let info = await transporter.sendMail(confirmAccountEmail(newUser.email, link));
 
-      res.status(200).json(true);
+      res.status(200).json(link);
     }
 
   } catch (error) {
@@ -78,21 +65,23 @@ userRouter.post('/signup', async (req, res) => {
     res.status(400).json({ message: error.message })
 
   }
-
 })
 
-/* &%&%&%&%&%& Verify Email and Create Account &%&%&%&%&%& */
+/* &%&%&%&%&%& Verify Email (Signup 2) &%&%&%&%&%& */
 
-userRouter.get('/confirm-account/:token', async (req, res) => {
+userRouter.get('/confirm-account/:email/:token', async (req, res) => {
 
   try {
 
     //Get jwt token from params & declare temp variable
-    const token = req.params.token;
+    const { email, token } = req.params;
     let user;
 
+    //Reassemble the secret that is unique to each individual user
+    const secret = process.env.ACCESS_TOKEN_SECRET + email;
+
     //Verify token and extract data into temp variable
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
+    jwt.verify(token, secret, (err, data) => {
       if (err) return res.sendStatus(403);
       user = data;
     });
@@ -117,7 +106,6 @@ userRouter.get('/confirm-account/:token', async (req, res) => {
     res.status(400).json({ message: error.message })
 
   }
-
 })
 
 /* &%&%&%&%&%& Login Route &%&%&%&%&%& */
@@ -137,18 +125,21 @@ userRouter.post("/login", async (req, res) => {
       res.status(200).json({ accessToken: accessToken });
 
     } else {
+
       res.status(401).json({ message: "Incorrect password. Please check the username and password provided and try again."})
+    
     }
 
   } catch (error) {
-    res.status(500).json({ message: "No account with the provided email address exists." })
-  }
 
+    res.status(500).json({ message: "No account with the provided email address exists." })
+
+  }
 });
 
-/* &%&%&%&%&%& Get Reset Password Email &%&%&%&%&%& */
+/* &%&%&%&%&%& Generate Token and Link (Password Reset 1) &%&%&%&%&%& */
 
-userRouter.post("/forgot-password", async (req, res) => {
+userRouter.post("/reset-password", async (req, res) => {
 
   const email = req.body.email;
 
@@ -180,32 +171,49 @@ userRouter.post("/forgot-password", async (req, res) => {
     //Send email to user via the transporter object
     // let info = await transporter.sendMail(passwordResetEmail);
 
-    res.send(true);
+    res.send(link);
 
   } catch (error) {
 
     res.status(400).json({ message: error.message });
 
   }
-
-
 });
 
-/* &%&%&%&%&%& Reset Password &%&%&%&%&%& */
+/* &%&%&%&%&%& Verify Token and Change Password (Password Reset 2) &%&%&%&%&%& */
 
 userRouter.post("/reset-password/:id/:token", async (req, res) => {
 
-
   try {
 
+    //Get id and jwt token from params & declare temp variable to hold jwt payload
+    const { id, token } = req.params;
+    let user;
+
+    //Recreate Secret Key
+    const secret = process.env.ACCESS_TOKEN_SECRET + id;
+
+    //Verify token and extract data into temp variable
+    jwt.verify(token, secret, (err, data) => {
+      if (err) return res.sendStatus(403);
+      user = data;
+    });
+
+    //Get new password data and hash it
+    const password = req.body.password;
+    const hash = await brcypt.hash(password, 13)
+
+    //Update user password
+    const updatedUser = await User.findOneAndUpdate({ email: user.email }, { password: hash}, { new: true });
+
+    //Send confirmation to client that token is valid
+    res.status(200).json(updatedUser);
 
   } catch (error) {
 
     res.status(400).json({ message: error.message });
 
   }
-
-
 });
 
 
