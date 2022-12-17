@@ -1,11 +1,15 @@
 // ---------- Dependencies ----------
 
-require("dotenv").config();
+require("dotenv").config({ path: '../.env' });
 
 const express = require('express');
 const brcypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
+const transporter = require("../connections/titanEmail.js");
+
+const confirmAccountEmail = require('./../emails/confirmAccountEmail');
+const passwordResetEmail = require('./../emails/passwordResetEmail');
 
 // ---------- Create User Router ----------
 
@@ -33,36 +37,85 @@ function authenticateToken(req, res, next) {
 
 userRouter.post('/signup', async (req, res) => {
 
-  const { name, email, password } = req.body
+  const { name, email, password } = req.body;
 
   try {
 
     //Check if user already exists
     const findExistingUser = await User.findOne({ email: email });
 
-    //If so res.send error
+    //If user already exists, then res.send error
     if (findExistingUser) {
 
       res.status(400).json({ message: "That user already exists. Try logging in with the provided email address." })
 
-    //Else try and make new user
+    //Else create a new user but do not save it. Send confirmation email with jwt token.
     } else {
 
-      const hash = await brcypt.hash(password, 13)
-
-      const newUser = new User({
+      const newUser = {
         name: name,
         email: email,
-        password: hash,
-      })
+        password: password
+      };
 
-      const savedUser = await newUser.save();
-      res.status(200).json({ message: "User created.", payload: savedUser })
+      //Create a new secret that is unique to each individual user
+      const secret = process.env.ACCESS_TOKEN_SECRET;
 
+      //Create a new JWT token with the a secret unique to each user that expires in 1 day
+      const token = jwt.sign(newUser, secret, { expiresIn: '30m' });
+
+      //Create a unique link from that temporary token
+      const link = `http://localhost:3000/users/confirm-account/${token}`
+
+      //Send email to user via the transporter object
+      let info = await transporter.sendMail(confirmAccountEmail(newUser.email, link));
+
+      res.status(200).json(true);
     }
 
   } catch (error) {
+
     res.status(400).json({ message: error.message })
+
+  }
+
+})
+
+/* &%&%&%&%&%& Verify Email and Create Account &%&%&%&%&%& */
+
+userRouter.get('/confirm-account/:token', async (req, res) => {
+
+  try {
+
+    //Get jwt token from params & declare temp variable
+    const token = req.params.token;
+    let user;
+
+    //Verify token and extract data into temp variable
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
+      if (err) return res.sendStatus(403);
+      user = data;
+    });
+
+    //Hash password data
+    const hash = await brcypt.hash(user.password, 13)
+
+    //Create new user from token data and hashed password
+    const newUser =  new User ({
+      name: user.name,
+      email: user.email,
+      password: hash
+    });
+
+    //Save new user
+    const savedUser = await newUser.save();
+
+    res.status(200).json({ message: "User created.", payload: savedUser })
+
+  } catch (error) {
+
+    res.status(400).json({ message: error.message })
+
   }
 
 })
@@ -104,6 +157,10 @@ userRouter.post("/forgot-password", async (req, res) => {
     //Check if user exists
     const existingUser = await User.findOne({ email: email });
 
+    if (!existingUser) {
+      res.send(`There is no account associated with the provided email address: ${email}.`)
+    }
+    
     //Create a new secret that is unique to each individual user
     const secret = process.env.ACCESS_TOKEN_SECRET + existingUser.id;
 
@@ -120,7 +177,26 @@ userRouter.post("/forgot-password", async (req, res) => {
     //Create a unique link from that temporary token
     const link = `http://localhost:3000/users/reset-password/${existingUser.id}/${token}`
 
-    res.send(link);
+    //Send email to user via the transporter object
+    // let info = await transporter.sendMail(passwordResetEmail);
+
+    res.send(true);
+
+  } catch (error) {
+
+    res.status(400).json({ message: error.message });
+
+  }
+
+
+});
+
+/* &%&%&%&%&%& Reset Password &%&%&%&%&%& */
+
+userRouter.post("/reset-password/:id/:token", async (req, res) => {
+
+
+  try {
 
 
   } catch (error) {
