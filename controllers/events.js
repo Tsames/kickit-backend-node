@@ -59,7 +59,7 @@ eventRouter.get("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const data = await Event.findOne({ _id: id });
+    const data = await Event.findById(id);
     res.status(200).json(data);
   } catch(error) {
     res.status(500).json({ message: error.message })
@@ -96,12 +96,19 @@ eventRouter.delete("/:id", (req, res) => {
 
 //Update Route
 eventRouter.put("/:id", async (req, res) => {
+  console.log(req.body);
+
   try {
     const id = req.params.id; 
     const newData = req.body;
     const options = { new: true };
 
+    console.log('Previous data before update');
+    console.log(req.body);
+
     const result = await Event.findByIdAndUpdate(id, newData, options);
+    console.log(`Returning new data:`);
+    console.log(result);
     res.send(result);
 
   } catch(error) {
@@ -135,6 +142,24 @@ eventRouter.post('/', async (req, res) => {
     res.status(400).json({ message: error.message })
   }
 })
+
+// //Search by Id Route
+// eventRouter.get('/find/:id', async (req, res) => {
+  
+//   const searchCriteria = req.params.id;
+
+//   try {
+
+//     const payload = await Event.findById(searchCriteria);
+//     res.send(payload);
+
+//   } catch(error) {
+
+//     res.status(400).json({ message: "No event with given Id exists." })
+
+//   }
+
+// })
 
 // ---------- Export Router ----------
 

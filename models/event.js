@@ -20,18 +20,6 @@ const eventSchema = new Schema({
   late: Number,
   days: [Number],
   attending: [{name: String, available: [[Number, Number, Number]]}],
-  organizerEmail: {
-    type: String,
-    required: true,
-  },
-  organizerName: {
-    type: String,
-    required: true,
-  },
-  organizerID: {
-    type: String,
-    required: true,
-  }
 });
 
 const Event = model("Event", eventSchema);
