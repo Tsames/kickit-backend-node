@@ -1,5 +1,5 @@
 //Dependencies
-require("dotenv").config();
+require("dotenv").config({ path: '../.env' });
 const mongoose = require('mongoose');
 
 //Shorthand for Connection arguments

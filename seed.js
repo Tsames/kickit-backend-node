@@ -1,6 +1,6 @@
 //Dependencies
 const mongoose = require("mongoose");
-const Event = require("./event");
+const Event = require("./models/event");
 
 mongoose.connection.on("open", () => {
 
