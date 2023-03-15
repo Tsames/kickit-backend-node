@@ -1,5 +1,5 @@
 // ---------- Dependencies ----------
-require("dotenv").config({ path: '../.env' });
+require("dotenv").config({ path: './../.env' });
 const nodemailer = require("nodemailer");
 
 //Create transporter for Node Mailer Library

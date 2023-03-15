@@ -1,9 +1,11 @@
 //Dependencies
-require("dotenv").config({ path: '../.env' });
+require("dotenv").config();
 const mongoose = require('mongoose');
 
+console.log(process.env.MONGO_URL);
+
 //Shorthand for Connection arguments
-const DATABASE_URL = process.env.MONGODB_URL;
+const DATABASE_URL = process.env.MONGO_URL;
 const CONFIG = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
