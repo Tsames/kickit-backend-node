@@ -2,8 +2,6 @@
 require("dotenv").config();
 const mongoose = require('mongoose');
 
-console.log(process.env.MONGO_URL);
-
 //Shorthand for Connection arguments
 const DATABASE_URL = process.env.MONGO_URL;
 const CONFIG = {
