@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cors({
   origin: 'http://localhost:3000',
-  // origin: 'http://kick-it.live'
+  origin: 'http://kick-it.live'
 }));
 
 // ---------- Routers ----------
